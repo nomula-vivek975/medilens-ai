@@ -881,7 +881,7 @@ function askAI() {
 }
 
 
-function askQuestion() {
+function askQuestionLocal() {
 
     const question = document
         .getElementById("aiInput")
