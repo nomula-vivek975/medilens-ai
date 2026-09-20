@@ -1,21 +1,51 @@
-module.exports = async (req, res) => {
-  const { question } = req.body;
+const medicines = [
+  {
+    name: "Dolo-650",
+    keywords: ["dolo"],
+    ingredient: "Paracetamol",
+    use: "fever and mild to moderate pain",
+    caution: "Do not take more than the dose on the label. Be careful if you have liver problems."
+  },
+  {
+    name: "Crocin",
+    keywords: ["crocin"],
+    ingredient: "Paracetamol",
+    use: "fever and mild pain like headache",
+    caution: "Do not combine with other paracetamol medicines."
+  },
+  {
+    name: "Calpol",
+    keywords: ["calpol"],
+    ingredient: "Paracetamol",
+    use: "fever and pain, also available as syrup for children",
+    caution: "Follow the age and weight based dose on the label."
+  }
+  // add your other medicines here in the same format
+];
 
-  const r = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": process.env.ANTHROPIC_API_KEY,
-      "anthropic-version": "2023-06-01"
-    },
-    body: JSON.stringify({
-      model: "claude-sonnet-5",
-      max_tokens: 500,
-      system: "You give simple, general information about medicines. No diagnosis, no doses. For personal medical questions, say to consult a doctor.",
-      messages: [{ role: "user", content: question }]
-    })
+module.exports = (req, res) => {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Use POST" });
+  }
+
+  const question = ((req.body && req.body.question) || "").toLowerCase();
+
+  const found = medicines.filter(m =>
+    m.keywords.some(k => question.includes(k)) ||
+    question.includes(m.ingredient.toLowerCase())
+  );
+
+  if (found.length === 0) {
+    return res.json({
+      answer: "Sorry, I only know a few sample medicines right now. Try asking about Dolo-650, Crocin or Calpol."
+    });
+  }
+
+  const text = found
+    .map(m => `${m.name} (${m.ingredient}) is used for ${m.use}. ${m.caution}`)
+    .join("\n\n");
+
+  res.json({
+    answer: text + "\n\nThis is general information only. Please consult a doctor or pharmacist."
   });
-
-  const data = await r.json();
-  res.json({ answer: data.content[0].text });
 };
