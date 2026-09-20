@@ -1297,3 +1297,83 @@ if (document.readyState === "loading") {
 } else {
     initMediLens();
 }
+// ---------------- ASK AI (uses the backend, falls back to local) ----------------
+
+async function askQuestion() {
+
+    const question = document
+        .getElementById("aiInput")
+        .value
+        .trim();
+
+    if (!question) {
+        showResult("⚠️ Please enter a question.");
+        return;
+    }
+
+    showResult("🤖 Thinking...");
+
+    try {
+
+        const res = await fetch("/api/ask", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ question: question })
+        });
+
+        if (!res.ok) {
+            throw new Error("Backend returned " + res.status);
+        }
+
+        const data = await res.json();
+
+        showBackendAnswer(question, data);
+
+    } catch (error) {
+
+        console.warn("Backend unavailable, using built-in answers:", error);
+
+        askQuestionLocal();
+    }
+}
+
+
+function showBackendAnswer(question, data) {
+
+    const keys = (data.keys || []).filter(function (k) {
+        return medicines[k];
+    });
+
+    if (data.type === "medicines" && keys.length === 1) {
+        showMedicine(medicines[keys[0]]);
+        return;
+    }
+
+    if (data.type === "medicines" && keys.length > 1) {
+        renderMedicineList(
+            "💊 Matching medicines",
+            "Answer from the MediLens backend",
+            keys
+        );
+        return;
+    }
+
+    showResult(`
+        <div class="medicine-card">
+
+            <h2>🤖 MediLens AI</h2>
+
+            <p>
+                <strong>Your question:</strong><br>
+                ${escapeHTML(question)}
+            </p>
+
+            <hr>
+
+            <div class="warning">
+                <p>${escapeHTML(data.message || "I don't have that in this prototype yet.")}</p>
+            </div>
+
+        </div>
+    `);
+}
