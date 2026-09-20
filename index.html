@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MediLens AI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+        <div class="container">
+
+    <div class="logo">
+        💊
+    </div>
+
+    <h1>MediLens AI</h1>
+
+    <p class="tagline">
+        AI-powered medicine information, made simple.
+    </p>
+
+    <p class="subtitle">
+        Scan a medicine, search an ingredient,
+        or ask MediLens AI.
+    </p>
+
+<button class="scan-btn" onclick="scanMedicine()">
+    📷 Scan Medicine
+</button>
+
+<input 
+    type="file" 
+    id="medicineImage" 
+    accept="image/*" 
+    style="display: none;"
+    onchange="showImage(event)"
+>
+
+<button class="search-btn" onclick="searchIngredient()">
+    🔎 Search Ingredient
+</button>
+
+<div id="ingredientSearch" style="display: none;">
+
+    <input
+        type="text"
+        id="ingredientInput"
+        placeholder="Enter active ingredient"
+    >
+
+    <button onclick="findIngredient()">
+        🔍 Search
+    </button>
+
+</div>
+
+<button class="ai-btn" onclick="askAI()">
+    🤖 Ask AI
+</button>
+
+<div id="aiSearch" style="display: none;">
+
+    <input
+        type="text"
+        id="aiInput"
+        placeholder="Ask about a medicine..."
+    >
+
+    <button onclick="askQuestion()">
+        🤖 Ask
+    </button>
+
+</div>
+<button class="compare-btn" onclick="compareMedicines()">
+    ⚖️ Compare Medicines
+</button>
+
+<div id="compareSearch" style="display: none;">
+
+    <h3>⚖️ Compare Medicines</h3>
+
+    <select id="medicine1">
+        <option value="">Select first medicine</option>
+        <option value="dolo">Dolo-650</option>
+        <option value="crocin">Crocin</option>
+        <option value="calpol">Calpol</option>
+    </select>
+
+    <select id="medicine2">
+        <option value="">Select second medicine</option>
+        <option value="dolo">Dolo-650</option>
+        <option value="crocin">Crocin</option>
+        <option value="calpol">Calpol</option>
+    </select>
+
+    <button onclick="showComparison()">
+        🔍 Compare
+    </button>
+
+</div>
+
+
+</div>
+        <div id="result"></div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
